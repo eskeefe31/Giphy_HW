@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Search</h1>
+    
+        <!-- Movies will get dumped here -->
+        <div id="movies-view"></div>
+    </div>
+    <form id="movie-form">
+        <label for="movie-input">Add another Adam Sandler Movie </label>
+        <input type="text" id="movie-input"><br>
+        <input id="add-movie" type="submit" value="Add">
+       
+      </form>
+      <div id="gifs-appear-here"> </div>  
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+  // Initial array of movies
+  var topics = ["Billy Madison", "Big Daddy", "Happy Gilmore", "The Wedding Singer"];
+
+  // Function for displaying movie data
+  function renderButtons() {
+    $("#movies-view").empty();
+
+    // Looping through the array of movies
+    for (var i = 0; i < topics.length; i++) {
+      var a = $("<button>");
+      a.addClass("movie");
+      a.attr("data-name", topics[i]);
+      a.text(topics[i]);
+      $("#movies-view").append(a);
+    }
+  }
+
+   $("#add-movie").on("click", function(event) {
+        event.preventDefault();
+        var movie = $("#movie-input").val().trim();
+        topics.push(movie);
+        renderButtons();
+      });
+      renderButtons();
+    
+
+
+      $(document).on("click", ".movie", alertMovieName);
+
+        //sets up which API you're going to pull from 
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + topics + "&api_key=nEiMZ6mvcjEB7MSlS36cDXg3kKuIZtm&limit=10";
+        //ajax function to get something from the above URL 
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+          })
+          // After the data comes back from the API
+          .done(function(response) {
+            // Storing an array of results in the results variable
+
+  
+            // Looping over every result item
+            for (var i = 0; i < topics.length; i++) {
+  
+              // Only taking action if the photo has an appropriate rating
+              if (topics[i].rating !== "r" && topics[i].rating !== "pg-13") {
+                // Creating a div with the class "item"
+                var gifDiv = $("<div class='item'>");
+  
+                // Storing the result item's rating
+                var rating = topics[i].rating;
+  
+                // Creating a paragraph tag with the result item's rating
+                var p = $("<p>").text("Rating: " + topics);
+  
+                // Creating an image tag
+                var personImage = $("<img>");
+  
+                // Giving the image tag an src attribute of a proprty pulled off the
+                // result item
+                personImage.attr("src", topics[i].images.fixed_height.url);
+  
+                // Appending the paragraph and personImage we created to the "gifDiv" div we created
+                gifDiv.append(p);
+                gifDiv.append(personImage);
+  
+                // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+                $("#gifs-appear-here").prepend(gifDiv);
+              }
+            }
+          });
+      });
+
+</script>
+
+</html>
